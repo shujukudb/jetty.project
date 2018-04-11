@@ -46,11 +46,13 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SslConnectionTest
 {
@@ -130,7 +132,8 @@ public class SslConnectionTest
         }
     }
 
-    @Before
+
+    @BeforeAll
     public void initSSL() throws Exception
     {
         File keystore = MavenTestingUtils.getTestResourceFile("keystore");
@@ -142,7 +145,8 @@ public class SslConnectionTest
         startManager();
     }
 
-    private void startManager() throws Exception
+    @BeforeEach
+    public void startManager() throws Exception
     {
         _testFill=true;
         _writeCallback=null;
@@ -159,7 +163,7 @@ public class SslConnectionTest
         _sslCtxFactory.start();
     }
 
-    @After
+    @AfterEach
     public void stopSSL() throws Exception
     {
         stopManager();
@@ -276,8 +280,8 @@ public class SslConnectionTest
                 client.getOutputStream().write("Hello".getBytes(StandardCharsets.UTF_8));
                 byte[] buffer = new byte[1024];
                 int len = client.getInputStream().read(buffer);
-                Assert.assertEquals(5, len);
-                Assert.assertEquals("Hello", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals(5, len);
+                assertEquals("Hello", new String(buffer, 0, len, StandardCharsets.UTF_8));
 
                 _dispatches.set(0);
                 client.getOutputStream().write("World".getBytes(StandardCharsets.UTF_8));
@@ -303,15 +307,15 @@ public class SslConnectionTest
                 client.getOutputStream().write("Hello".getBytes(StandardCharsets.UTF_8));
                 byte[] buffer = new byte[1024];
                 int len = client.getInputStream().read(buffer);
-                Assert.assertEquals(5, len);
-                Assert.assertEquals("Hello", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals(5, len);
+                assertEquals("Hello", new String(buffer, 0, len, StandardCharsets.UTF_8));
 
                 client.startHandshake();
 
                 client.getOutputStream().write("World".getBytes(StandardCharsets.UTF_8));
                 len = client.getInputStream().read(buffer);
-                Assert.assertEquals(5, len);
-                Assert.assertEquals("World", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals(5, len);
+                assertEquals("World", new String(buffer, 0, len, StandardCharsets.UTF_8));
             }
         }
     }
@@ -334,22 +338,14 @@ public class SslConnectionTest
                 client.getOutputStream().write("Hello".getBytes(StandardCharsets.UTF_8));
                 byte[] buffer = new byte[1024];
                 int len = client.getInputStream().read(buffer);
-                Assert.assertEquals(5, len);
-                Assert.assertEquals("Hello", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals(5, len);
+                assertEquals("Hello", new String(buffer, 0, len, StandardCharsets.UTF_8));
 
                 // Try to renegotiate, must fail.
                 client.startHandshake();
 
                 client.getOutputStream().write("World".getBytes(StandardCharsets.UTF_8));
-                try
-                {
-                    client.getInputStream().read(buffer);
-                    Assert.fail();
-                }
-                catch (SSLException e)
-                {
-                    // expected
-                }
+                assertThrows(SSLException.class, ()-> client.getInputStream().read(buffer));
             }
         }
     }
@@ -373,35 +369,27 @@ public class SslConnectionTest
                 client.getOutputStream().write("Good".getBytes(StandardCharsets.UTF_8));
                 byte[] buffer = new byte[1024];
                 int len = client.getInputStream().read(buffer);
-                Assert.assertEquals(4, len);
-                Assert.assertEquals("Good", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals(4, len);
+                assertEquals("Good", new String(buffer, 0, len, StandardCharsets.UTF_8));
 
                 client.startHandshake();
 
                 client.getOutputStream().write("Bye".getBytes(StandardCharsets.UTF_8));
                 len = client.getInputStream().read(buffer);
-                Assert.assertEquals(3, len);
-                Assert.assertEquals("Bye", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals(3, len);
+                assertEquals("Bye", new String(buffer, 0, len, StandardCharsets.UTF_8));
 
                 client.startHandshake();
 
                 client.getOutputStream().write("Cruel".getBytes(StandardCharsets.UTF_8));
                 len = client.getInputStream().read(buffer);
-                Assert.assertEquals(5, len);
-                Assert.assertEquals("Cruel", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals(5, len);
+                assertEquals("Cruel", new String(buffer, 0, len, StandardCharsets.UTF_8));
 
                 client.startHandshake();
 
                 client.getOutputStream().write("World".getBytes(StandardCharsets.UTF_8));
-                try
-                {
-                    client.getInputStream().read(buffer);
-                    Assert.fail();
-                }
-                catch (SSLException e)
-                {
-                    // expected
-                }
+                assertThrows(SSLException.class, ()-> client.getInputStream().read(buffer));
             }
         }
     }
@@ -426,9 +414,9 @@ public class SslConnectionTest
 
                 byte[] buffer = new byte[1024];
                 int len = client.getInputStream().read(buffer);
-                Assert.assertEquals("Hello Client", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals("Hello Client", new String(buffer, 0, len, StandardCharsets.UTF_8));
 
-                Assert.assertNull(_writeCallback.get(1, TimeUnit.SECONDS));
+                assertNull(_writeCallback.get(1, TimeUnit.SECONDS));
             }
         }
     }
@@ -451,15 +439,15 @@ public class SslConnectionTest
                 client.getOutputStream().write("Hello".getBytes(StandardCharsets.UTF_8));
                 byte[] buffer = new byte[1024];
                 int len = client.getInputStream().read(buffer);
-                Assert.assertEquals(5, len);
-                Assert.assertEquals("Hello", new String(buffer, 0, len, StandardCharsets.UTF_8));
+                assertEquals(5, len);
+                assertEquals("Hello", new String(buffer, 0, len, StandardCharsets.UTF_8));
 
                 _dispatches.set(0);
                 client.getOutputStream().write("World".getBytes(StandardCharsets.UTF_8));
                 len = 5;
                 while (len > 0)
                     len -= client.getInputStream().read(buffer);
-                Assert.assertEquals(0, len);
+                assertEquals(0, len);
             }
         }
     }
@@ -510,7 +498,7 @@ public class SslConnectionTest
                     }
                 }
 
-                Assert.assertTrue(count.await(20, TimeUnit.SECONDS));
+                assertTrue(count.await(20, TimeUnit.SECONDS));
             }
         }
     }
