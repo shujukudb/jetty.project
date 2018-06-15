@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +85,7 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
             {
                 // There are no queued requests, so the newly created connection will be idle
                 connection1 = peekIdleConnection(connectionPool, 5, TimeUnit.SECONDS);
-                Assert.assertNotNull(connection1);
+                assertNotNull(connection1);
 
                 Connection connection2 = connectionPool.acquire();
                 assertSame(connection1, connection2);
@@ -125,7 +124,7 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
                     }
                 };
             }
-        })
+        };
         {
             destination.start();
             DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
@@ -146,9 +145,9 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
 
             // There must be 2 idle connections.
             Connection connection = pollIdleConnection(connectionPool, 5, TimeUnit.SECONDS);
-            Assert.assertNotNull(connection);
+            assertNotNull(connection);
             connection = pollIdleConnection(connectionPool, 5, TimeUnit.SECONDS);
-            Assert.assertNotNull(connection);
+            assertNotNull(connection);
         }
     }
 
@@ -166,9 +165,9 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
             if (connection1 == null)
             {
                 connection1 = peekIdleConnection(connectionPool, 5, TimeUnit.SECONDS);
-                Assert.assertNotNull(connection1);
+                assertNotNull(connection1);
                 // Acquire the connection to make it active.
-                Assert.assertSame("From idle", connection1, connectionPool.acquire());
+                assertSame(connection1, connectionPool.acquire(),"From idle");
             }
 
             destination.process(connection1);
@@ -197,7 +196,7 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
             {
                 connection1 = peekIdleConnection(connectionPool, 5, TimeUnit.SECONDS);
 
-                Assert.assertNotNull(connection1);
+                assertNotNull(connection1);
 
                 TimeUnit.MILLISECONDS.sleep(2 * idleTimeout);
 
@@ -212,7 +211,7 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
     public void test_Request_Failed_If_MaxRequestsQueuedPerDestination_Exceeded(Scenario scenario) throws Exception
     {
         start(scenario, new EmptyServerHandler());
-
+        String scheme = scenario.getScheme();
         int maxQueued = 1;
         client.setMaxRequestsQueuedPerDestination(maxQueued);
         client.setMaxConnectionsPerDestination(1);
