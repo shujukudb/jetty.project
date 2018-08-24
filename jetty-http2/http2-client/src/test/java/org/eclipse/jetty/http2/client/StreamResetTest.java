@@ -707,7 +707,7 @@ public class StreamResetTest extends AbstractTest
 
         AbstractHTTP2ServerConnectionFactory http2 = connector.getConnectionFactory(AbstractHTTP2ServerConnectionFactory.class);
         Set<Session> sessions = http2.getBean(AbstractHTTP2ServerConnectionFactory.HTTP2SessionContainer.class).getSessions();
-        Assert.assertEquals(1, sessions.size());
+        assertEquals(1, sessions.size());
         HTTP2Session session = (HTTP2Session)sessions.iterator().next();
         HTTP2Flusher flusher = session.getBean(HTTP2Flusher.class);
         assertEquals(0, flusher.getFrameQueueSize());

@@ -259,7 +259,7 @@ public class SettingsGenerateParseTest
         while (buffer.hasRemaining())
             parser.parse(buffer);
 
-        Assert.assertEquals(ErrorCode.ENHANCE_YOUR_CALM_ERROR.code, errorRef.get());
+        assertEquals(ErrorCode.ENHANCE_YOUR_CALM_ERROR.code, errorRef.get());
     }
 
     @Test
