@@ -19,12 +19,7 @@
 package org.eclipse.jetty.client.http;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RejectedExecutionException;
@@ -44,6 +39,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -284,20 +280,21 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         assertNotSame(destinationBefore, destinationAfter);
     }
 
-    @Test
-    public void testDestinationIsRemovedAfterConnectionError() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testDestinationIsRemovedAfterConnectionError(Scenario scenario) throws Exception
     {
         String host = "localhost";
         int port = connector.getLocalPort();
         client.setRemoveIdleDestinations(true);
-        Assert.assertTrue("Destinations of a fresh client must be empty", client.getDestinations().isEmpty());
+        assertTrue(client.getDestinations().isEmpty(), "Destinations of a fresh client must be empty");
 
         server.stop();
-        Request request = client.newRequest(host, port).scheme(this.scheme);
+        Request request = client.newRequest(host, port).scheme(scenario.getScheme());
         try
         {
             request.send();
-            Assert.fail("Request to a closed port must fail");
+            fail("Request to a closed port must fail");
         }
         catch (Exception expected)
         {
@@ -308,7 +305,7 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         {
             Thread.sleep(10);
         }
-        Assert.assertTrue("Destination must be removed after connection error", client.getDestinations().isEmpty());
+        assertTrue(client.getDestinations().isEmpty(), "Destination must be removed after connection error");
     }
 
     private Connection pollIdleConnection(DuplexConnectionPool connectionPool, long time, TimeUnit unit) throws InterruptedException
