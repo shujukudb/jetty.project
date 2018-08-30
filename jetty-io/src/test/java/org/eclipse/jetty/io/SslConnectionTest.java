@@ -136,7 +136,7 @@ public class SslConnectionTest
     }
 
 
-    @BeforeAll
+    @BeforeEach
     public void initSSL() throws Exception
     {
         File keystore = MavenTestingUtils.getTestResourceFile("keystore");
@@ -148,7 +148,6 @@ public class SslConnectionTest
         startManager();
     }
 
-    @BeforeEach
     public void startManager() throws Exception
     {
         _testFill=true;

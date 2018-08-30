@@ -284,6 +284,8 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
     @ArgumentsSource(ScenarioProvider.class)
     public void testDestinationIsRemovedAfterConnectionError(Scenario scenario) throws Exception
     {
+        start(scenario, new EmptyServerHandler());
+
         String host = "localhost";
         int port = connector.getLocalPort();
         client.setRemoveIdleDestinations(true);
