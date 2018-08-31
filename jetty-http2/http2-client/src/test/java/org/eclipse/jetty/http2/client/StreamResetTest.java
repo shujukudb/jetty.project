@@ -824,7 +824,7 @@ public class StreamResetTest extends AbstractTest
         ByteBuffer content = ByteBuffer.wrap(new byte[1024]);
         stream.data(new DataFrame(stream.getId(), content, true), Callback.NOOP);
 
-        Assert.assertTrue(requestLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(requestLatch.await(5, TimeUnit.SECONDS));
 
         stream.reset(new ResetFrame(stream.getId(), ErrorCode.CANCEL_STREAM_ERROR.code), Callback.NOOP);
         // Wait for the reset to arrive to the server and be processed.
@@ -833,6 +833,6 @@ public class StreamResetTest extends AbstractTest
         // Try to read on server.
         readLatch.countDown();
         // Read on server should fail.
-        Assert.assertTrue(failureLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(failureLatch.await(5, TimeUnit.SECONDS));
     }
 }
